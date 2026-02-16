@@ -1,15 +1,18 @@
 # GitHub Miner
 
-A pixel art miner that evolves based on your GitHub commit activity.
+A pixel art miner inspired by 굴착소년 쿵 (Under Attack) that evolves based on your GitHub commit activity.
 
 ![GitHub Miner](github-miner.svg)
 
 ## How It Works
 
-A Node.js script fetches your GitHub contribution data and generates a pixel art SVG where:
-- The mine gets deeper as you make more commits
-- Your pickaxe upgrades through 5 tiers
-- Gems and resources accumulate underground
+A Node.js script fetches your GitHub contribution data and generates a pixel art SVG featuring:
+- An orange-bodied miner standing on green grass with clouds drifting overhead
+- Sandy underground that deepens as you make more commits
+- Gray boulders scattered along the surface
+- Pickaxe upgrades through 5 tiers
+- Gems and resources accumulating underground
+- A game-style HUD showing your commit count, current tier, depth, and progress toward the next tier
 
 Updated automatically every 6 hours via GitHub Actions.
 
@@ -31,8 +34,8 @@ node src/index.js
 
 | Tier | Commits | Scene |
 |------|---------|-------|
-| 1 | 0-499 | Surface mine, wooden pickaxe |
-| 2 | 500-1999 | Shallow mine, iron pickaxe, few gems |
-| 3 | 2000-4999 | Deep mine, steel pickaxe, gems and gold |
-| 4 | 5000-9999 | Very deep mine, diamond pickaxe, abundant resources |
-| 5 | 10000+ | Massive cavern, legendary gear, treasure hoard |
+| 1 | 0-249 | Surface mine, wooden pickaxe |
+| 2 | 250-999 | Shallow mine, iron pickaxe, few gems |
+| 3 | 1000-2499 | Deep mine, steel pickaxe, gems and gold |
+| 4 | 2500-4999 | Very deep mine, diamond pickaxe, abundant resources |
+| 5 | 5000+ | Massive cavern, legendary gear, treasure hoard |
