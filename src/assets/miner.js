@@ -30,7 +30,6 @@ const EW = "#FFFFFF"; // Eye white (highlight dot)
 // Mouth
 const TW = "#FFFFFF"; // Teeth white
 const ML = "#CC3333"; // Mouth line / tongue
-const MB = "#8B4513"; // Mouth interior (brown)
 
 // Body (orange jumpsuit)
 const BY = "#E65100"; // Body Yellow-orange (main)
@@ -38,7 +37,8 @@ const BH = "#FF6D00"; // Body Highlight
 const BD = "#BF360C"; // Body Dark/shadow
 
 // Belt
-const BL = "#3D2817"; // Belt (dark brown)
+const BL = "#000000"; // Belt (black)
+const BC = "#FFD700"; // Belt Buckle (gold)
 
 // Boots (brown family)
 const BT = "#5D4037"; // Boot base
@@ -55,69 +55,38 @@ export function getMiner(pickaxe) {
   const L = p.handle;
 
   return [
-    // Row 0: Very top of helmet dome
-    [_, _, _, _, _, _, OL, HH, HH, HH, HH, HH, HH, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 1: Helmet dome widens
-    [_, _, _, _, _, OL, HH, HY, HY, HY, HY, HY, HY, HH, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 2: Helmet dome with highlight
-    [_, _, _, _, OL, HH, HY, HY, HY, HY, HY, HY, HY, HY, HH, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 3: Helmet top with cross appearing
-    [_, _, _, OL, HH, HY, HY, HY, HL, HC, HC, HL, HY, HY, HY, HH, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 4: Helmet body with full cross
-    [_, _, OL, HH, HY, HY, HY, HY, HC, HC, HC, HC, HY, HY, HY, HY, HH, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 5: Helmet widest part
-    [_, OL, HH, HY, HY, HY, HY, HY, HC, HL, HC, HC, HY, HY, HY, HY, HY, HH, OL, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 6: Helmet lower edge, face starts
-    [_, _, OL, SH, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SH, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 7: Upper face - eyebrows area
-    [_, _, OL, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 8: Big eyes row 1 (eyebrows/upper eye)
-    [_, _, OL, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 9: Big eyes row 2 - eye whites/upper pupils (3px wide each eye, spaced)
-    [_, _, OL, SK, EK, EW, SK, SK, SK, SK, SK, SK, SK, EK, EW, SK, SK, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 10: Big eyes row 3 - full pupils (3px wide each)
-    [_, _, OL, SK, EK, EK, SK, SK, SK, SK, SK, SK, SK, EK, EK, SK, SK, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 11: Eye lower / cheek transition
-    [_, _, _, OL, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 12: Cheeks - smile starts
-    [_, _, _, OL, SH, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SH, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 13: Wide smile with teeth (굴착소년 쿵 style)
-    [_, _, _, _, OL, SH, SK, SK, TW, TW, TW, TW, SK, SK, SH, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 14: Open mouth with teeth row 2, tongue
-    [_, _, _, _, OL, SH, SK, MB, TW, TW, TW, TW, MB, SK, SH, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 15: Lower mouth/tongue
-    [_, _, _, _, _, OL, SK, MB, ML, ML, ML, ML, MB, SK, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 16: Chin
-    [_, _, _, _, _, _, OL, SK, SK, SK, SK, SK, SK, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 17: Neck
-    [_, _, _, _, _, _, OL, SD, SD, SD, SD, SD, SD, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 18: Neck/upper body
-    [_, _, _, _, _, OL, BD, BY, BY, BY, BY, BY, BY, BD, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 19: Body upper - shoulders
-    [_, _, _, _, OL, BD, BH, BY, BY, BY, BY, BY, BY, BH, BD, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 20: Body - arms start (left arm out, right arm holds pickaxe)
-    [_, _, _, OL, BV, BY, BY, BY, BY, BY, BY, BY, BY, BY, BV, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 21: Body with belt line starting
-    [_, _, _, OL, BT, BY, BY, BY, BY, BY, BY, BY, BY, BY, BT, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 22: Belt row (left arm down, right arm holds pickaxe handle)
-    [_, _, OL, BV, BL, BL, BL, BL, BL, BL, BL, BL, BL, BL, L, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 23: Lower body / pickaxe handle continues
-    [_, _, OL, BK, BD, BY, BY, BY, BY, BY, BY, BY, BY, BD, L, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 24: Lower body, pickaxe handle L-shape bend
-    [_, _, _, OL, BV, BD, BY, BY, BY, BY, BY, BY, BD, BV, K, K, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 25: Upper boots, pickaxe head
-    [_, _, _, _, OL, BK, BD, BD, BD, BD, BD, BD, BK, OL, K, K, K, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 26: Boots row 1
-    [_, _, _, _, OL, BV, BT, BT, BT, BT, BT, BT, BV, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 27: Boots row 2
-    [_, _, _, _, OL, BK, BV, BV, BV, BV, BV, BV, BK, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 28: Boots row 3 (sole)
-    [_, _, _, _, _, OL, BK, BK, BK, BK, BK, BK, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 29: Boots bottom
-    [_, _, _, _, _, _, OL, OL, OL, OL, OL, OL, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 30: Empty
-    [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
-    // Row 31: Empty
-    [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+    //         0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
+    /* R00 */ [_, _, _, _, _, _, _, _, _, _, _, _, OL, HH, HH, HH, HH, HH, HH, OL, _, _, _, _, _, _, _, _, _, _, _, _],
+    /* R01 */ [_, _, _, _, _, _, _, _, _, _, _, OL, HH, HY, HY, HY, HY, HY, HY, HY, HH, OL, _, _, _, _, _, _, _, _, _, _],
+    /* R02 */ [_, _, _, _, _, _, _, _, _, _, OL, HH, HY, HY, HY, HY, HY, HY, HY, HY, HY, HH, OL, _, _, _, _, _, _, _, _, _],
+    /* R03 */ [_, _, _, _, _, _, _, _, _, OL, HH, HY, HY, HY, HY, HY, HY, HY, HY, HY, HY, HY, HH, OL, _, _, _, _, _, _, _, _],
+    /* R04 */ [_, _, _, _, _, _, _, _, OL, HH, HY, HY, HY, HY, HY, HY, HY, HY, HY, HY, HY, HY, HY, HH, OL, _, _, _, _, _, _, _],
+    /* R05 */ [_, _, _, _, _, _, _, OL, HY, HY, HY, HY, HY, HY, HY, HY, HY, HY, HY, HY, HY, HY, HY, HY, OL, _, _, _, _, _, _, _],
+    /* R06 */ [_, _, _, _, _, _, OL, HY, HY, HY, HY, HY, HY, HL, HC, HC, HC, HL, HY, HY, HY, HY, HY, HY, HY, OL, _, _, _, _, _, _],
+    /* R07 */ [_, _, _, _, _, OL, HY, HY, HY, HY, HY, HY, HL, HC, HC, HC, HC, HC, HL, HY, HY, HY, HY, HY, HY, HY, OL, _, _, _, _, _],
+    /* R08 */ [_, _, _, _, _, OL, HY, HY, HY, HY, HY, HY, HY, HC, HC, HC, HC, HC, HY, HY, HY, HY, HY, HY, HY, OL, _, _, _, _, _, _],
+    /* R09 */ [_, _, _, _, _, OL, HY, HY, HY, HY, HY, HY, HY, HY, HY, HY, HY, HY, HY, HY, HY, HY, HY, HY, HY, OL, _, _, _, _, _, _],
+    /* R10 */ [_, _, _, _, _, _, OL, OL, OL, OL, OL, OL, OL, OL, OL, OL, OL, OL, OL, OL, OL, OL, OL, OL, OL, _, _, _, _, _, _, _],
+    /* R11 */ [_, _, _, _, _, OL, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, OL, _, _, _, _, _],
+    /* R12 */ [_, _, _, _, _, OL, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SD, SK, SK, SK, SK, SK, SK, SK, SK, SK, OL, _, _, _, _, _],
+    /* R13 */ [_, _, _, _, _, OL, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, OL, _, _, _, _, _],
+    /* R14 */ [_, _, _, _, _, OL, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, OL, _, _, _, _, _],
+    /* R15 */ [_, _, _, _, _, OL, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, OL, _, _, _, _, _],
+    /* R16 */ [_, _, _, _, _, _, OL, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, OL, _, _, _, _, _],
+    /* R17 */ [_, _, _, _, _, _, _, OL, SK, SK, SK, SK, SK, SK, SK, ML, ML, ML, ML, ML, SK, SK, SK, SK, SK, SK, OL, _, _, _, _, _],
+    /* R18 */ [_, _, _, _, _, _, _, _, OL, OL, SK, SK, SK, SK, ML, ML, ML, ML, ML, ML, SK, SK, SK, SK, SK, OL, OL, _, _, _, _, _],
+    /* R19 */ [_, _, _, _, _, _, _, _, OL, SK, OL, OL, OL, OL, OL, OL, OL, OL, OL, OL, OL, OL, SK, OL, _, _, _, _, _, _, _, _],
+    /* R20 */ [_, _, _, _, _, _, _, _, _, OL, OL, SK, SK, SK, SK, SK, SK, SK, SK, SK, SK, OL, OL, _, _, _, _, _, _, _, _, _],
+    /* R21 */ [_, _, _, _, _, _, _, _, _, OL, BD, BH, BY, BY, BY, BY, BY, BY, BY, BY, BH, BD, OL, _, _, _, _, _, _, _, _, _],
+    /* R22 */ [_, _, _, _, _, _, _, _, OL, BH, BY, BY, BY, BY, BY, BY, BY, BY, BY, BY, BY, BY, BH, OL, _, _, _, _, _, _, _, _],
+    /* R23 */ [_, _, _, _, _, _, _, _, OL, BY, BY, BY, BY, BY, BY, BY, BY, BY, BY, BY, BY, BY, BY, OL, L, _, _, _, _, _, _, _],
+    /* R24 */ [_, _, _, _, _, _, _, _, _, OL, BL, BL, BL, BL, BL, BC, BC, BL, BL, BL, BL, BL, BL, OL, L, L, _, _, _, _, _, _],
+    /* R25 */ [_, _, _, _, _, _, _, _, _, OL, BD, BY, BY, BY, BY, BY, BY, BY, BY, BY, BD, OL, _, K, K, K, OL, _, _, _, _, _],
+    /* R26 */ [_, _, _, _, _, _, _, _, _, _, OL, BV, BT, BT, BT, OL, BT, BT, BT, BV, OL, _, _, _, _, _, _, _, _, _, _, _],
+    /* R27 */ [_, _, _, _, _, _, _, _, _, _, OL, BK, BV, BT, BT, OL, BT, BT, BV, BK, OL, _, _, _, _, _, _, _, _, _, _, _],
+    /* R28 */ [_, _, _, _, _, _, _, _, _, _, _, OL, BK, BK, OL, _, OL, BK, BK, OL, _, _, _, _, _, _, _, _, _, _, _, _],
+    /* R29 */ [_, _, _, _, _, _, _, _, _, _, _, _, OL, OL, _, _, _, OL, OL, _, _, _, _, _, _, _, _, _, _, _, _, _],
+    /* R30 */ [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+    /* R31 */ [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
   ];
 }
