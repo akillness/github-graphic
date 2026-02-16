@@ -41,4 +41,29 @@ describe("getTier", () => {
     const t5 = getTier(15000);
     assert.ok(t5.mineDepth > t1.mineDepth);
   });
+
+  it("includes nextLevelMinCommits for non-max tiers", () => {
+    const t1 = getTier(0);
+    assert.equal(t1.nextLevelMinCommits, 500);
+
+    const t2 = getTier(500);
+    assert.equal(t2.nextLevelMinCommits, 2000);
+
+    const t3 = getTier(2000);
+    assert.equal(t3.nextLevelMinCommits, 5000);
+
+    const t4 = getTier(5000);
+    assert.equal(t4.nextLevelMinCommits, 10000);
+  });
+
+  it("returns null nextLevelMinCommits for tier 5", () => {
+    const t5 = getTier(10000);
+    assert.equal(t5.nextLevelMinCommits, null);
+  });
+
+  it("includes minCommits in return value", () => {
+    assert.equal(getTier(0).minCommits, 0);
+    assert.equal(getTier(500).minCommits, 500);
+    assert.equal(getTier(10000).minCommits, 10000);
+  });
 });

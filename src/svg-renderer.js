@@ -13,7 +13,7 @@ export function spriteToRects(sprite, offsetX, offsetY, pixelSize, cssClass) {
   return rects.join("\n");
 }
 
-export function wrapSvg(content, width, height, title) {
+export function wrapSvg(content, width, height) {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">
 <style>
   @keyframes swing {
@@ -24,10 +24,15 @@ export function wrapSvg(content, width, height, title) {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.5; }
   }
+  @keyframes drift {
+    0% { transform: translateX(0); }
+    50% { transform: translateX(8px); }
+    100% { transform: translateX(0); }
+  }
   .pickaxe { animation: swing 2s ease-in-out infinite; }
   .gem { animation: sparkle 1.5s ease-in-out infinite; }
+  .cloud { animation: drift 6s ease-in-out infinite; }
 </style>
 ${content}
-${title ? `<text x="10" y="20" font-family="monospace" font-size="14" fill="#FFFFFF">${title}</text>` : ""}
 </svg>`;
 }

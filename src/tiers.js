@@ -9,8 +9,9 @@ const TIERS = [
 export function getTier(commitCount) {
   for (let i = TIERS.length - 1; i >= 0; i--) {
     if (commitCount >= TIERS[i].minCommits) {
-      return { ...TIERS[i] };
+      const nextLevelMinCommits = i < TIERS.length - 1 ? TIERS[i + 1].minCommits : null;
+      return { ...TIERS[i], nextLevelMinCommits };
     }
   }
-  return { ...TIERS[0] };
+  return { ...TIERS[0], nextLevelMinCommits: TIERS[1].minCommits };
 }

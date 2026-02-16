@@ -42,4 +42,10 @@ describe("wrapSvg", () => {
     assert.ok(result.includes("<style>"));
     assert.ok(result.includes("@keyframes"));
   });
+
+  it("includes drift animation for clouds", () => {
+    const result = wrapSvg("", 800, 400);
+    assert.ok(result.includes("@keyframes drift"));
+    assert.ok(result.includes(".cloud"));
+  });
 });

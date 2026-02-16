@@ -7,35 +7,37 @@ const PICKAXE_COLORS = {
 };
 
 const _ = null;
-const S = "#F5DEB3"; // skin
-const H = "#4A3728"; // hair
-const B = "#1E90FF"; // blue shirt
-const P = "#2F4F4F"; // pants
+const Y = "#F5A623"; // yellow helmet
+const C = "#2E7D32"; // green cross on helmet
+const S = "#FFDAB3"; // skin tone
 const E = "#000000"; // eyes
-const O = "#8B4513"; // boots
+const W = "#FFFFFF"; // white teeth / big grin
+const B = "#E65100"; // orange outfit
+const G = "#F5A623"; // yellow gloves (matches helmet)
+const O = "#5D4037"; // brown boots
 
 export function getMiner(pickaxe) {
   const c = PICKAXE_COLORS[pickaxe] || PICKAXE_COLORS.wood;
   const K = c.head;    // pickaxe head
   const L = c.handle;  // pickaxe handle
 
-  // 16x16 miner sprite facing right, holding pickaxe
+  // 16x16 굴착소년쿵-style miner: yellow helmet, green cross, big grin
   return [
-    [_, _, _, _, _, H, H, H, H, _, _, _, _, _, _, _],
-    [_, _, _, _, H, H, H, H, H, H, _, _, _, _, _, _],
-    [_, _, _, _, H, H, H, H, H, H, _, _, _, _, _, _],
-    [_, _, _, _, S, S, S, S, S, S, _, _, _, _, _, _],
-    [_, _, _, _, S, E, S, S, E, S, _, _, _, _, _, _],
-    [_, _, _, _, S, S, S, S, S, S, _, _, _, _, _, _],
-    [_, _, _, _, _, S, S, S, S, _, _, _, _, _, _, _],
-    [_, _, _, B, B, B, B, B, B, B, B, _, L, _, _, _],
-    [_, _, _, B, B, B, B, B, B, B, B, _, L, _, _, _],
-    [_, _, _, _, B, B, B, B, B, B, _, _, L, _, _, _],
-    [_, _, _, _, S, B, B, B, B, S, _, L, _, _, _, _],
-    [_, _, _, _, _, P, P, P, P, _, K, K, K, _, _, _],
-    [_, _, _, _, _, P, P, P, P, _, _, _, _, _, _, _],
-    [_, _, _, _, _, P, _, _, P, _, _, _, _, _, _, _],
-    [_, _, _, _, _, P, _, _, P, _, _, _, _, _, _, _],
-    [_, _, _, _, O, O, _, _, O, O, _, _, _, _, _, _],
+    [_, _, _, _, _, Y, Y, Y, Y, Y, Y, _, _, _, _, _],
+    [_, _, _, _, Y, Y, Y, Y, Y, Y, Y, Y, _, _, _, _],
+    [_, _, _, Y, Y, Y, C, C, C, Y, Y, Y, Y, _, _, _],
+    [_, _, Y, Y, Y, Y, C, C, C, Y, Y, Y, Y, Y, _, _],
+    [_, _, _, S, S, S, S, S, S, S, S, S, S, _, _, _],
+    [_, _, _, S, E, E, S, S, S, E, E, S, _, _, _, _],
+    [_, _, _, S, W, W, W, W, W, W, W, S, _, _, _, _],
+    [_, _, _, _, S, W, W, W, W, W, S, _, _, _, _, _],
+    [_, _, _, _, B, B, B, B, B, B, B, _, _, _, _, _],
+    [_, _, G, G, B, B, B, B, B, B, B, G, G, _, _, _],
+    [_, _, G, G, B, B, B, B, B, B, B, G, L, _, _, _],
+    [_, _, _, _, B, B, B, B, B, B, B, _, L, _, _, _],
+    [_, _, _, _, _, B, B, _, B, B, _, _, L, _, _, _],
+    [_, _, _, _, _, B, B, _, B, B, _, K, K, K, _, _],
+    [_, _, _, _, O, O, O, _, O, O, O, _, _, _, _, _],
+    [_, _, _, _, O, O, O, _, O, O, O, _, _, _, _, _],
   ];
 }
