@@ -1,0 +1,14 @@
+{
+  "name": "github-miner",
+  "version": "1.0.0",
+  "description": "Pixel art miner SVG that evolves based on GitHub commit activity",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "generate": "node src/index.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
