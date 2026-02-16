@@ -9,12 +9,10 @@ describe("getMiner", () => {
       assert.ok(Array.isArray(sprite));
       assert.ok(sprite.length > 0, "sprite has rows");
       assert.ok(sprite[0].length > 0, "sprite has columns");
-      // All rows same width
       const width = sprite[0].length;
       for (const row of sprite) {
         assert.equal(row.length, width, "all rows must be same width");
       }
-      // Values are hex strings or null
       for (const row of sprite) {
         for (const cell of row) {
           if (cell !== null) {
@@ -24,4 +22,16 @@ describe("getMiner", () => {
       }
     });
   }
+
+  it("uses more than 8 unique colors for detailed sprite", () => {
+    const sprite = getMiner("wood");
+    const colors = new Set(sprite.flat().filter((c) => c !== null));
+    assert.ok(colors.size > 8, `expected more than 8 colors, got ${colors.size}`);
+  });
+
+  it("has sprite height of 16 rows or less (max 20 for scene compatibility)", () => {
+    const sprite = getMiner("wood");
+    assert.ok(sprite.length <= 20, `sprite height ${sprite.length} exceeds max 20 rows`);
+    assert.equal(sprite.length, 16, "sprite should be 16 rows for proper proportions");
+  });
 });

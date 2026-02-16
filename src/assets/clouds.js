@@ -1,20 +1,22 @@
 const _ = null;
-const W = "#FFFFFF";
-const L = "#E8E8E8";
+const H = "#F8F8FF"; // Bright highlight (top shine)
+const W = "#FFFFFF"; // Base white
+const M = "#D0D0D0"; // Medium shadow
+const L = "#C0C0C0"; // Darker bottom shadow
 
 const CLOUD_SPRITES = [
-  // Large cloud 10x4
+  // Large cloud 10x4 with volume and depth
   [
-    [_, _, W, W, W, W, W, W, _, _],
-    [_, W, W, W, W, W, W, W, W, _],
-    [W, W, W, L, W, W, L, W, W, W],
-    [_, W, W, W, W, W, W, W, W, _],
+    [_, _, H, H, H, H, H, H, _, _],
+    [_, H, W, W, H, H, W, W, H, _],
+    [W, W, M, W, W, W, W, M, W, W],
+    [_, W, L, W, W, W, W, L, W, _],
   ],
-  // Small cloud 7x3
+  // Small cloud 7x3 with volume and depth
   [
-    [_, _, W, W, W, _, _],
-    [_, W, W, W, W, W, _],
-    [W, W, L, W, L, W, W],
+    [_, _, H, H, H, _, _],
+    [_, H, W, W, W, H, _],
+    [W, W, M, W, M, W, W],
   ],
 ];
 

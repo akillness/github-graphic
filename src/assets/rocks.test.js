@@ -23,7 +23,7 @@ describe("getRock", () => {
   });
 
   it("uses only gray colors", () => {
-    const allowed = [null, "#696969", "#808080", "#A0A0A0"];
+    const allowed = [null, "#505050", "#585858", "#696969", "#808080", "#A0A0A0", "#B8B8B8"];
     for (let i = 0; i < 2; i++) {
       const rock = getRock(i);
       for (const row of rock) {

@@ -65,16 +65,18 @@ export function buildScene(tier, commitCount) {
 function buildHud(tier, commitCount) {
   const hud = [];
 
+  const fontFamily = "'Press Start 2P', monospace";
+
   // Top-left: commits bar
-  hud.push(`<rect x="8" y="8" width="200" height="28" rx="4" fill="rgba(0,0,0,0.6)"/>`);
-  hud.push(`<text x="16" y="28" font-family="monospace" font-size="14" font-weight="bold" fill="#FFFFFF">COMMITS: ${commitCount.toLocaleString()}</text>`);
+  hud.push(`<rect x="8" y="8" width="220" height="28" rx="4" fill="rgba(0,0,0,0.6)"/>`);
+  hud.push(`<text x="16" y="27" font-family="${fontFamily}" font-size="10" fill="#FFFFFF">COMMITS: ${commitCount.toLocaleString()}</text>`);
 
   // Top-right: tier badge
   hud.push(`<rect x="${SVG_WIDTH - 158}" y="8" width="150" height="28" rx="4" fill="rgba(0,0,0,0.6)"/>`);
-  hud.push(`<text x="${SVG_WIDTH - 150}" y="28" font-family="monospace" font-size="14" font-weight="bold" fill="#FFD700">TIER ${tier.level}</text>`);
+  hud.push(`<text x="${SVG_WIDTH - 150}" y="27" font-family="${fontFamily}" font-size="10" fill="#FFD700">TIER ${tier.level}</text>`);
 
   // Depth indicator below tier
-  hud.push(`<text x="${SVG_WIDTH - 150}" y="52" font-family="monospace" font-size="10" fill="#CCCCCC">DEPTH: ${tier.mineDepth}m</text>`);
+  hud.push(`<text x="${SVG_WIDTH - 150}" y="50" font-family="${fontFamily}" font-size="8" fill="#CCCCCC">DEPTH: ${tier.mineDepth}m</text>`);
 
   // Progress bar or MAX TIER badge
   if (tier.nextLevelMinCommits !== null && tier.nextLevelMinCommits !== undefined) {
@@ -89,7 +91,7 @@ function buildHud(tier, commitCount) {
     hud.push(`<rect x="${barX}" y="${barY}" width="${fillW}" height="${barH}" rx="2" fill="#4CAF50" class="progress-bar"/>`);
   } else {
     hud.push(`<rect x="${SVG_WIDTH - 158}" y="56" width="150" height="16" rx="4" fill="rgba(0,0,0,0.6)"/>`);
-    hud.push(`<text x="${SVG_WIDTH - 150}" y="69" font-family="monospace" font-size="10" font-weight="bold" fill="#FFD700">★ MAX TIER ★</text>`);
+    hud.push(`<text x="${SVG_WIDTH - 150}" y="69" font-family="${fontFamily}" font-size="8" fill="#FFD700">★ MAX TIER ★</text>`);
   }
 
   return hud.join("\n");

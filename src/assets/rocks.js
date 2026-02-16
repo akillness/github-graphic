@@ -1,21 +1,22 @@
 const _ = null;
-const D = "#696969";
-const M = "#808080";
+const H = "#B8B8B8";
 const L = "#A0A0A0";
+const M = "#808080";
+const D = "#696969";
+const S = "#505050";
+const C = "#585858";
 
 const ROCK_SPRITES = [
-  // Small rock 5x3
   [
-    [_, D, D, D, _],
-    [D, M, L, M, D],
-    [_, D, D, D, _],
+    [_, H, L, D, _],
+    [H, L, M, C, D],
+    [_, S, D, S, _],
   ],
-  // Large rock 6x4
   [
-    [_, _, D, D, _, _],
-    [_, D, M, L, D, _],
-    [D, M, L, L, M, D],
-    [_, D, D, D, D, _],
+    [_, H, L, L, D, _],
+    [H, L, M, C, M, D],
+    [L, M, C, L, M, S],
+    [_, S, D, S, D, _],
   ],
 ];
 

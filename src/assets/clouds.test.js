@@ -23,7 +23,7 @@ describe("getCloud", () => {
   });
 
   it("uses only white and light gray colors", () => {
-    const allowed = [null, "#FFFFFF", "#E8E8E8"];
+    const allowed = [null, "#F8F8FF", "#FFFFFF", "#D0D0D0", "#C0C0C0"];
     for (let i = 0; i < 2; i++) {
       const cloud = getCloud(i);
       for (const row of cloud) {
