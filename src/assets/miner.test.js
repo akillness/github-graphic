@@ -29,9 +29,8 @@ describe("getMiner", () => {
     assert.ok(colors.size > 8, `expected more than 8 colors, got ${colors.size}`);
   });
 
-  it("has sprite height of 16 rows or less (max 20 for scene compatibility)", () => {
+  it("has sprite height of 32 rows (chibi upgrade)", () => {
     const sprite = getMiner("wood");
-    assert.ok(sprite.length <= 20, `sprite height ${sprite.length} exceeds max 20 rows`);
-    assert.equal(sprite.length, 16, "sprite should be 16 rows for proper proportions");
+    assert.equal(sprite.length, 32, "sprite should be 32 rows for chibi proportions");
   });
 });

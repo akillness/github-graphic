@@ -8,6 +8,7 @@ import { spriteToRects, wrapSvg } from "./svg-renderer.js";
 const SVG_WIDTH = 800;
 const SVG_HEIGHT = 400;
 const PIXEL_SIZE = 4;
+const MINER_PIXEL_SIZE = PIXEL_SIZE / 2; // 2 — miner renders at half pixel size for 2× detail
 
 // Grid dimensions in "pixels"
 const GRID_W = SVG_WIDTH / PIXEL_SIZE;  // 200
@@ -37,11 +38,13 @@ export function buildScene(tier, commitCount) {
     parts.push(spriteToRects(rock, rp.x * PIXEL_SIZE, rockY * PIXEL_SIZE, PIXEL_SIZE));
   }
 
-  // 4. Miner character — placed on ground level using getGroundRow
+  // 4. Miner character — mixed resolution: 32×32 sprite at MINER_PIXEL_SIZE for detail
   const miner = getMiner(tier.pickaxe);
-  const minerX = (GRID_W / 2 - miner[0].length / 2) * PIXEL_SIZE;
-  const minerY = (groundY - miner.length) * PIXEL_SIZE;
-  parts.push(spriteToRects(miner, minerX, minerY, PIXEL_SIZE));
+  const minerSvgW = miner[0].length * MINER_PIXEL_SIZE;
+  const minerSvgH = miner.length * MINER_PIXEL_SIZE;
+  const minerX = (SVG_WIDTH - minerSvgW) / 2;
+  const minerY = groundY * PIXEL_SIZE - minerSvgH;
+  parts.push(spriteToRects(miner, minerX, minerY, MINER_PIXEL_SIZE));
 
   // 5. Gems — scatter in underground area
   if (tier.gemCount > 0) {
