@@ -5,6 +5,8 @@ import { getCloud, getCloudPositions } from "./assets/clouds.js";
 import { getRock, getRockPositions } from "./assets/rocks.js";
 import { getDecoration } from "./assets/decorations.js";
 import { spriteToRects, wrapSvg } from "./svg-renderer.js";
+import { OreGenerator } from "./ore-generator.js";
+import { getAssetDensity } from "./tiers.js";
 
 const SVG_WIDTH = 800;
 const SVG_HEIGHT = 400;
@@ -41,58 +43,84 @@ export function buildScene(tier, commitCount) {
 
   // 3.5 Underground Decorations (Tier-based)
   const undergroundStartY = groundY;
-  
-  // Roots: Always present near surface (Tier 1+)
-  for (let x = 0; x < GRID_W; x += 12) {
-    if (Math.random() > 0.7) {
-      parts.push(spriteToRects(getDecoration("root_1"), x * PIXEL_SIZE, undergroundStartY * PIXEL_SIZE, PIXEL_SIZE));
-    }
+  const undergroundHeight = GRID_H - undergroundStartY;
+
+  // Roots: Controlled placement (Tier 1+)
+  const rootDensity = getAssetDensity("roots", tier.level);
+  const rootCount = rootDensity?.targetCount ?? 10;
+  const rootMinDist = rootDensity?.minDistance ?? 5;
+  const rootPositions = OreGenerator.generateRandomPositions(
+    rootCount, GRID_W, 5, rootMinDist
+  );
+  for (const pos of rootPositions) {
+    parts.push(spriteToRects(getDecoration("root_1"), pos.x * PIXEL_SIZE, (undergroundStartY + pos.y) * PIXEL_SIZE, PIXEL_SIZE));
   }
 
-  // Beams & Supports (Tier 2+: Depth > 4)
+  // Beams & Supports (Tier 2+: Depth > 4) - Controlled count
   if (tier.mineDepth > 4) {
-    for (let y = undergroundStartY + 8; y < GRID_H - 5; y += 10) {
-      // Side Supports
-      parts.push(spriteToRects(getDecoration("beam_vertical"), 8 * PIXEL_SIZE, y * PIXEL_SIZE, PIXEL_SIZE));
-      parts.push(spriteToRects(getDecoration("beam_vertical"), (GRID_W - 12) * PIXEL_SIZE, y * PIXEL_SIZE, PIXEL_SIZE));
-      
-      // Tier 3+ (Depth > 7): Cross beams and Lanterns
-      if (tier.mineDepth > 7 && Math.random() > 0.6) {
-         const bx = 20 + Math.floor(Math.random() * (GRID_W - 40));
-         parts.push(spriteToRects(getDecoration("beam_horizontal"), bx * PIXEL_SIZE, y * PIXEL_SIZE, PIXEL_SIZE));
-         
-         // Lanterns on beams
-         if (Math.random() > 0.4) {
-            parts.push(spriteToRects(getDecoration("lantern"), (bx + 1) * PIXEL_SIZE, (y + 2) * PIXEL_SIZE, PIXEL_SIZE));
-         }
-      }
+    const areaHeight = GRID_H - undergroundStartY - 10;
+    const beamDensity = getAssetDensity("beams", tier.level);
+
+    // Vertical beams - controlled by tier
+    const numVertical = beamDensity?.vertical ?? Math.min(Math.floor(areaHeight / 3) * 2, 8);
+    for(let i=0; i<numVertical; i++) {
+        const vx = Math.random() * (GRID_W - 10);
+        const vy = undergroundStartY + 5 + Math.random() * areaHeight;
+        parts.push(spriteToRects(getDecoration("beam_vertical"), vx * PIXEL_SIZE, vy * PIXEL_SIZE, PIXEL_SIZE));
+    }
+
+    // Tier 3+ (Depth > 7): Horizontal beams and Lanterns
+    if (tier.mineDepth > 7) {
+       const numHorizontal = beamDensity?.horizontal ?? Math.min(Math.floor(areaHeight / 6), 4);
+       for(let i=0; i<numHorizontal; i++) {
+           const hx = Math.random() * (GRID_W - 10);
+           const hy = undergroundStartY + 5 + Math.random() * areaHeight;
+           parts.push(spriteToRects(getDecoration("beam_horizontal"), hx * PIXEL_SIZE, hy * PIXEL_SIZE, PIXEL_SIZE));
+
+           if (Math.random() > 0.4) {
+              parts.push(spriteToRects(getDecoration("lantern"), (hx + 1) * PIXEL_SIZE, (hy + 2) * PIXEL_SIZE, PIXEL_SIZE));
+           }
+       }
     }
   }
 
-  // Deep Decorations (Tier 4+: Depth > 10): Glowing Mushrooms
+  // Deep Decorations (Tier 4+: Depth > 10): Glowing Mushrooms - Controlled placement
   if (tier.mineDepth > 10) {
-    for (let i = 0; i < 8; i++) {
-       const mx = (15 + Math.random() * (GRID_W - 30));
-       const my = (undergroundStartY + 15 + Math.random() * (GRID_H - undergroundStartY - 20));
-       parts.push(spriteToRects(getDecoration("mushroom"), mx * PIXEL_SIZE, my * PIXEL_SIZE, PIXEL_SIZE));
-    }
+     const mushDensity = getAssetDensity("mushrooms", tier.level);
+     const mushCount = mushDensity?.targetCount ?? 10;
+     const mushMinDist = mushDensity?.minDistance ?? 8;
+
+     // Place mushrooms in deep area only (y >= 15)
+     const mushPositions = OreGenerator.generateRandomPositions(
+       mushCount, GRID_W, undergroundHeight - 15, mushMinDist
+     );
+     for (const pos of mushPositions) {
+       parts.push(spriteToRects(
+         getDecoration("mushroom"),
+         pos.x * PIXEL_SIZE,
+         (undergroundStartY + 15 + pos.y) * PIXEL_SIZE,
+         PIXEL_SIZE
+       ));
+     }
   }
 
-  // 3.6 New Gamification Assets (Bats, Skulls, Chests)
+  // 3.6 New Gamification Assets (Bats, Skulls, Chests) - Controlled counts
   if (tier.mineDepth > 5) {
-    // Bats in the upper cave
-    for (let i = 0; i < tier.mineDepth; i++) {
-        if (Math.random() > 0.7) {
-            const bx = (Math.random() * (GRID_W - 10));
-            const by = undergroundStartY + 5 + Math.random() * 10;
-            parts.push(spriteToRects(getDecoration("bat"), bx * PIXEL_SIZE, by * PIXEL_SIZE, PIXEL_SIZE));
-        }
+    // Bats in the upper cave - controlled by tier
+    const batDensity = getAssetDensity("bats", tier.level);
+    const maxBats = batDensity?.maxCount ?? 3;
+    for (let i = 0; i < maxBats; i++) {
+        const bx = (Math.random() * (GRID_W - 10));
+        const by = undergroundStartY + 5 + Math.random() * 10;
+        parts.push(spriteToRects(getDecoration("bat"), bx * PIXEL_SIZE, by * PIXEL_SIZE, PIXEL_SIZE));
     }
   }
 
   if (tier.mineDepth > 8) {
-      // Skulls in the deep
-      for (let i = 0; i < 5; i++) {
+      // Skulls in the deep - controlled by tier
+      const skullDensity = getAssetDensity("skulls", tier.level);
+      const maxSkulls = skullDensity?.maxCount ?? 3;
+      for (let i = 0; i < maxSkulls; i++) {
           const sx = (Math.random() * (GRID_W - 10));
           const sy = undergroundStartY + 20 + Math.random() * (GRID_H - undergroundStartY - 30);
           parts.push(spriteToRects(getDecoration("skull"), sx * PIXEL_SIZE, sy * PIXEL_SIZE, PIXEL_SIZE));
@@ -127,16 +155,44 @@ export function buildScene(tier, commitCount) {
       }
   }
 
-  // 5. Gems — scatter in underground area
+  // 5. Gems — Vein-based placement (Minecraft-style ore veins)
   if (tier.gemCount > 0) {
     const gemTypes = getGemTypes();
-    const undergroundStartY = groundY + 2;
-    for (let i = 0; i < tier.gemCount; i++) {
-      const gemType = gemTypes[i % gemTypes.length];
-      const gem = getGem(gemType);
-      const gx = ((i * 37 + 13) % (GRID_W - 10)) * PIXEL_SIZE;
-      const gy = (undergroundStartY + (i * 7) % (GRID_H - undergroundStartY - 5)) * PIXEL_SIZE;
-      parts.push(spriteToRects(gem, gx, gy, PIXEL_SIZE, "gem"));
+    const gemDensity = getAssetDensity("gems", tier.level);
+
+    // Determine gem count based on tier density config
+    const targetGems = gemDensity?.targetCount ?? tier.gemCount;
+
+    // Scattered distribution with depth bias and density zones
+    const gemMinDist = gemDensity?.minDistance ?? 5;
+    const gemPositions = OreGenerator.generateScattered(
+      targetGems,
+      GRID_W - 4,
+      undergroundHeight - 4,
+      {
+        minDistance: gemMinDist,
+        depthBias: 0.6,
+        noiseScale: 0.04,
+        densityContrast: 0.35,
+        outlierRatio: 0.12,
+        margin: 2,
+      }
+    );
+
+    for (const pos of gemPositions) {
+      // Bounds check with offset
+      const gx = pos.x + 2;
+      const gy = pos.y + 2;
+      if (gx >= 2 && gx < GRID_W - 2 && gy >= 2 && gy < undergroundHeight - 2) {
+        const gemType = gemTypes[Math.floor(Math.random() * gemTypes.length)];
+        parts.push(spriteToRects(
+          getGem(gemType),
+          gx * PIXEL_SIZE,
+          (undergroundStartY + gy) * PIXEL_SIZE,
+          PIXEL_SIZE,
+          "gem"
+        ));
+      }
     }
   }
 
