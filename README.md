@@ -22,6 +22,16 @@ Updated automatically every 6 hours via GitHub Actions.
 2. Add it as a repository secret named `GH_TOKEN`
 3. The GitHub Actions workflow handles the rest
 
+## Easy Setup with Claude Code
+
+If you use [Claude Code](https://claude.com/claude-code), just run:
+
+```
+/project:setup
+```
+
+Claude will walk you through every step — no technical knowledge needed!
+
 ## Local Development
 
 ```bash
