@@ -30,12 +30,12 @@ export GH_TOKEN=your-token
 node src/index.js
 ```
 
-## Tiers
+## Tier Gallery
 
-| Tier | Commits | Scene |
-|------|---------|-------|
-| 1 | 0-249 | Surface mine, wooden pickaxe |
-| 2 | 250-999 | Shallow mine, iron pickaxe, few gems |
-| 3 | 1000-2499 | Deep mine, steel pickaxe, gems and gold |
-| 4 | 2500-4999 | Very deep mine, diamond pickaxe, abundant resources |
-| 5 | 5000+ | Massive cavern, legendary gear, treasure hoard |
+| Tier | Commits | Description | Preview |
+|------|---------|-------------|---------|
+| **1** | 0+ | **Surface Mine:** Just breaking ground. Roots visible near the surface. Wooden pickaxe. | ![Tier 1](docs/images/tier-1.svg) |
+| **2** | 250+ | **Shallow Mine:** Digging deeper. Vertical wooden supports appear. Iron pickaxe. Some gems. | ![Tier 2](docs/images/tier-2.svg) |
+| **3** | 1,000+ | **Deep Mine:** Established shaft. Horizontal beams and lanterns light the way. Steel pickaxe. Gold and gems. | ![Tier 3](docs/images/tier-3.svg) |
+| **4** | 2,500+ | **Very Deep Mine:** Magical depths. Glowing mushrooms and complex structures. Diamond pickaxe. Abundant resources. | ![Tier 4](docs/images/tier-4.svg) |
+| **5** | 5,000+ | **Massive Cavern:** The motherlode. Legendary gear and a hoard of treasure. | ![Tier 5](docs/images/tier-5.svg) |
