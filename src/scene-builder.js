@@ -3,6 +3,7 @@ import { getMineBackground, getGroundRow } from "./assets/mine.js";
 import { getGem, getGemTypes } from "./assets/gems.js";
 import { getCloud, getCloudPositions } from "./assets/clouds.js";
 import { getRock, getRockPositions } from "./assets/rocks.js";
+import { getDecoration } from "./assets/decorations.js";
 import { spriteToRects, wrapSvg } from "./svg-renderer.js";
 
 const SVG_WIDTH = 800;
@@ -38,6 +39,73 @@ export function buildScene(tier, commitCount) {
     parts.push(spriteToRects(rock, rp.x * PIXEL_SIZE, rockY * PIXEL_SIZE, PIXEL_SIZE));
   }
 
+  // 3.5 Underground Decorations (Tier-based)
+  const undergroundStartY = groundY;
+  
+  // Roots: Always present near surface (Tier 1+)
+  for (let x = 0; x < GRID_W; x += 12) {
+    if (Math.random() > 0.7) {
+      parts.push(spriteToRects(getDecoration("root_1"), x * PIXEL_SIZE, undergroundStartY * PIXEL_SIZE, PIXEL_SIZE));
+    }
+  }
+
+  // Beams & Supports (Tier 2+: Depth > 4)
+  if (tier.mineDepth > 4) {
+    for (let y = undergroundStartY + 8; y < GRID_H - 5; y += 10) {
+      // Side Supports
+      parts.push(spriteToRects(getDecoration("beam_vertical"), 8 * PIXEL_SIZE, y * PIXEL_SIZE, PIXEL_SIZE));
+      parts.push(spriteToRects(getDecoration("beam_vertical"), (GRID_W - 12) * PIXEL_SIZE, y * PIXEL_SIZE, PIXEL_SIZE));
+      
+      // Tier 3+ (Depth > 7): Cross beams and Lanterns
+      if (tier.mineDepth > 7 && Math.random() > 0.6) {
+         const bx = 20 + Math.floor(Math.random() * (GRID_W - 40));
+         parts.push(spriteToRects(getDecoration("beam_horizontal"), bx * PIXEL_SIZE, y * PIXEL_SIZE, PIXEL_SIZE));
+         
+         // Lanterns on beams
+         if (Math.random() > 0.4) {
+            parts.push(spriteToRects(getDecoration("lantern"), (bx + 1) * PIXEL_SIZE, (y + 2) * PIXEL_SIZE, PIXEL_SIZE));
+         }
+      }
+    }
+  }
+
+  // Deep Decorations (Tier 4+: Depth > 10): Glowing Mushrooms
+  if (tier.mineDepth > 10) {
+    for (let i = 0; i < 8; i++) {
+       const mx = (15 + Math.random() * (GRID_W - 30));
+       const my = (undergroundStartY + 15 + Math.random() * (GRID_H - undergroundStartY - 20));
+       parts.push(spriteToRects(getDecoration("mushroom"), mx * PIXEL_SIZE, my * PIXEL_SIZE, PIXEL_SIZE));
+    }
+  }
+
+  // 3.6 New Gamification Assets (Bats, Skulls, Chests)
+  if (tier.mineDepth > 5) {
+    // Bats in the upper cave
+    for (let i = 0; i < tier.mineDepth; i++) {
+        if (Math.random() > 0.7) {
+            const bx = (Math.random() * (GRID_W - 10));
+            const by = undergroundStartY + 5 + Math.random() * 10;
+            parts.push(spriteToRects(getDecoration("bat"), bx * PIXEL_SIZE, by * PIXEL_SIZE, PIXEL_SIZE));
+        }
+    }
+  }
+
+  if (tier.mineDepth > 8) {
+      // Skulls in the deep
+      for (let i = 0; i < 5; i++) {
+          const sx = (Math.random() * (GRID_W - 10));
+          const sy = undergroundStartY + 20 + Math.random() * (GRID_H - undergroundStartY - 30);
+          parts.push(spriteToRects(getDecoration("skull"), sx * PIXEL_SIZE, sy * PIXEL_SIZE, PIXEL_SIZE));
+      }
+  }
+
+  if (tier.mineDepth > 10) {
+      // Legendary Treasure Chest at the bottom
+      const chestX = (GRID_W / 2) + 15; // Offset slightly from center
+      const chestY = GRID_H - 8;
+      parts.push(spriteToRects(getDecoration("chest"), chestX * PIXEL_SIZE, chestY * PIXEL_SIZE, PIXEL_SIZE));
+  }
+
   // 4. Miner character — mixed resolution: 32×32 sprite at MINER_PIXEL_SIZE for detail
   const miner = getMiner(tier.pickaxe);
   const minerSvgW = miner[0].length * MINER_PIXEL_SIZE;
@@ -45,6 +113,19 @@ export function buildScene(tier, commitCount) {
   const minerX = (SVG_WIDTH - minerSvgW) / 2;
   const minerY = groundY * PIXEL_SIZE - minerSvgH;
   parts.push(spriteToRects(miner, minerX, minerY, MINER_PIXEL_SIZE));
+
+  // 4.5 Sparkles for High Tier
+  if (tier.pickaxe === "diamond" || tier.pickaxe === "legendary") {
+      const sparkleColor = tier.pickaxe === "legendary" ? "#FFD700" : "#E0FFFF";
+      for (let i = 0; i < 5; i++) {
+          const sx = minerX + Math.random() * minerSvgW;
+          const sy = minerY + Math.random() * minerSvgH;
+          // Simple 2x2 pixel sparkle
+          parts.push(`<rect x="${sx}" y="${sy}" width="${PIXEL_SIZE/2}" height="${PIXEL_SIZE/2}" fill="${sparkleColor}" opacity="0.8">
+            <animate attributeName="opacity" values="0;1;0" dur="${0.5 + Math.random()}s" repeatCount="indefinite" />
+          </rect>`);
+      }
+  }
 
   // 5. Gems — scatter in underground area
   if (tier.gemCount > 0) {
