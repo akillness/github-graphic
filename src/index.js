@@ -2,6 +2,7 @@ import { writeFileSync } from "node:fs";
 import { fetchContributions } from "./github-api.js";
 import { getTier } from "./tiers.js";
 import { buildScene } from "./scene-builder.js";
+import { parseActivity } from "./activity.js";
 
 const USERNAME = process.env.GITHUB_USERNAME;
 const TOKEN = process.env.GH_TOKEN;
@@ -21,7 +22,10 @@ async function main() {
   const tier = getTier(totalCommits);
   console.log(`Tier: ${tier.level} — ${tier.description}`);
 
-  const svg = buildScene(tier, totalCommits);
+  const activity = parseActivity(calendar);
+  console.log(`Streak: ${activity.currentStreak}d | Active today: ${activity.isActiveToday} | Milestones: ${activity.milestones.length}`);
+
+  const svg = buildScene(tier, totalCommits, activity);
   writeFileSync(OUTPUT_FILE, svg);
   console.log(`Generated ${OUTPUT_FILE}`);
 }

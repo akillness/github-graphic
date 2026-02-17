@@ -37,9 +37,14 @@ export function wrapSvg(content, width, height) {
     50% { transform: translateX(8px); }
     100% { transform: translateX(0); }
   }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
   .pickaxe { animation: swing 2s ease-in-out infinite; }
   .gem { animation: sparkle 1.5s ease-in-out infinite; }
   .cloud { animation: drift 6s ease-in-out infinite; }
+  .pulse { animation: pulse 2s ease-in-out infinite; }
 </style>
 ${content}
 </svg>`;

@@ -4,6 +4,7 @@ import { getGem, getGemTypes } from "./assets/gems.js";
 import { getCloud, getCloudPositions } from "./assets/clouds.js";
 import { getRock, getRockPositions } from "./assets/rocks.js";
 import { getDecoration } from "./assets/decorations.js";
+import { getPetroglyph, MILESTONE_SLOTS, NICHE_EMPTY, NICHE_BORDER, PANEL_BORDER } from "./assets/petroglyphs.js";
 import { spriteToRects, wrapSvg } from "./svg-renderer.js";
 import { OreGenerator } from "./ore-generator.js";
 import { getAssetDensity } from "./tiers.js";
@@ -17,7 +18,7 @@ const MINER_PIXEL_SIZE = PIXEL_SIZE / 2; // 2 — miner renders at half pixel si
 const GRID_W = SVG_WIDTH / PIXEL_SIZE;  // 200
 const GRID_H = SVG_HEIGHT / PIXEL_SIZE; // 100
 
-export function buildScene(tier, commitCount) {
+export function buildScene(tier, commitCount, activity) {
   const parts = [];
 
   // 1. Mine background (new sandy colors)
@@ -134,13 +135,156 @@ export function buildScene(tier, commitCount) {
       parts.push(spriteToRects(getDecoration("chest"), chestX * PIXEL_SIZE, chestY * PIXEL_SIZE, PIXEL_SIZE));
   }
 
+  // 3.7 Achievement Alcove — grouped milestone panel on the left underground wall
+  if (activity && activity.milestones.length > 0) {
+    const earnedIcons = new Set(activity.milestones.map((m) => m.icon));
+
+    // Layout: 4 columns × 2 rows of 7x7 icon niches
+    const ICON_SIZE = 7;        // 7x7 logical pixels per icon
+    const NICHE_PAD = 1;        // 1px padding around each icon inside niche
+    const NICHE_SIZE = ICON_SIZE + NICHE_PAD * 2; // 9px per niche slot
+    const COLS = 4;
+    const ROWS = 2;
+    const GAP = 1;              // 1px gap between niches
+    const BORDER = 1;           // 1px panel border
+
+    const panelW = BORDER + COLS * NICHE_SIZE + (COLS - 1) * GAP + BORDER; // 1 + 36 + 3 + 1 = 41
+    const panelH = BORDER + ROWS * NICHE_SIZE + (ROWS - 1) * GAP + BORDER; // 1 + 18 + 1 + 1 = 21
+
+    // Position: left side, vertically centered in underground
+    const alcoveGridX = 4;
+    const alcoveGridY = undergroundStartY + Math.floor((undergroundHeight - panelH) / 2);
+    const alcoveX = alcoveGridX * PIXEL_SIZE;
+    const alcoveY = alcoveGridY * PIXEL_SIZE;
+
+    // Panel border
+    parts.push(`<rect x="${alcoveX}" y="${alcoveY}" width="${panelW * PIXEL_SIZE}" height="${panelH * PIXEL_SIZE}" fill="${PANEL_BORDER}" rx="2"/>`);
+
+    // Render each slot
+    for (let slot = 0; slot < MILESTONE_SLOTS.length; slot++) {
+      const col = slot % COLS;
+      const row = Math.floor(slot / COLS);
+      const nicheX = alcoveX + (BORDER + col * (NICHE_SIZE + GAP)) * PIXEL_SIZE;
+      const nicheY = alcoveY + (BORDER + row * (NICHE_SIZE + GAP)) * PIXEL_SIZE;
+
+      // Niche border
+      parts.push(`<rect x="${nicheX}" y="${nicheY}" width="${NICHE_SIZE * PIXEL_SIZE}" height="${NICHE_SIZE * PIXEL_SIZE}" fill="${NICHE_BORDER}" rx="1"/>`);
+
+      const icon = MILESTONE_SLOTS[slot];
+      if (earnedIcons.has(icon)) {
+        // Earned: render carved icon inside the niche
+        const iconX = nicheX + NICHE_PAD * PIXEL_SIZE;
+        const iconY = nicheY + NICHE_PAD * PIXEL_SIZE;
+        parts.push(spriteToRects(getPetroglyph(icon), iconX, iconY, PIXEL_SIZE));
+      } else {
+        // Unearned: blank dark stone fill (inset from niche border)
+        const innerX = nicheX + NICHE_PAD * PIXEL_SIZE;
+        const innerY = nicheY + NICHE_PAD * PIXEL_SIZE;
+        parts.push(`<rect x="${innerX}" y="${innerY}" width="${ICON_SIZE * PIXEL_SIZE}" height="${ICON_SIZE * PIXEL_SIZE}" fill="${NICHE_EMPTY}"/>`);
+      }
+    }
+  }
+
   // 4. Miner character — mixed resolution: 32×32 sprite at MINER_PIXEL_SIZE for detail
-  const miner = getMiner(tier.pickaxe);
+  const minerState = activity
+    ? activity.isActiveToday ? "active"
+    : activity.daysSinceLastCommit >= 7 ? "idle"
+    : "normal"
+    : "normal";
+  const miner = getMiner(tier.pickaxe, minerState);
   const minerSvgW = miner[0].length * MINER_PIXEL_SIZE;
   const minerSvgH = miner.length * MINER_PIXEL_SIZE;
   const minerX = (SVG_WIDTH - minerSvgW) / 2;
   const minerY = groundY * PIXEL_SIZE - minerSvgH;
-  parts.push(spriteToRects(miner, minerX, minerY, MINER_PIXEL_SIZE));
+
+  if (minerState === "idle") {
+    // Wrap miner in a group with reduced opacity
+    parts.push(`<g opacity="0.65">`);
+    parts.push(spriteToRects(miner, minerX, minerY, MINER_PIXEL_SIZE));
+    parts.push(`</g>`);
+
+    // Floating "zzz" text above miner head
+    const fontFamily = "'Press Start 2P', monospace";
+    const zzzX = minerX + minerSvgW / 2 + 12;
+    const zzzY = minerY - 8;
+    parts.push(`<text x="${zzzX}" y="${zzzY}" font-family="${fontFamily}" font-size="8" fill="#FFFFFF" opacity="0.6" class="pulse">zzz</text>`);
+    parts.push(`<text x="${zzzX + 16}" y="${zzzY - 12}" font-family="${fontFamily}" font-size="6" fill="#FFFFFF" opacity="0.4" class="pulse">z</text>`);
+  } else if (minerState === "active") {
+    // Split miner into body + pickaxe for swing animation
+    // Pickaxe pixels: rows 23-26, cols >= 19 (non-null)
+    const bodyRects = [];
+    const pickaxeRects = [];
+
+    for (let y = 0; y < miner.length; y++) {
+      for (let x = 0; x < miner[y].length; x++) {
+        const color = miner[y][x];
+        if (color === null) continue;
+
+        const rx = minerX + x * MINER_PIXEL_SIZE;
+        const ry = minerY + y * MINER_PIXEL_SIZE;
+        const rect = `<rect x="${rx}" y="${ry}" width="${MINER_PIXEL_SIZE}" height="${MINER_PIXEL_SIZE}" fill="${color}"/>`;
+
+        const isPickaxe = y >= 23 && y <= 26 && x >= 19;
+        if (isPickaxe) {
+          pickaxeRects.push(rect);
+        } else {
+          bodyRects.push(rect);
+        }
+      }
+    }
+
+    // Render body (static)
+    parts.push(bodyRects.join("\n"));
+
+    // Render pickaxe with swing animation
+    // Pivot at (col 19, row 24) — where arm connects to pickaxe
+    const pivotX = minerX + 19 * MINER_PIXEL_SIZE;
+    const pivotY = minerY + 24 * MINER_PIXEL_SIZE;
+    const swingAngle = -40;
+
+    parts.push(`<g>`);
+    parts.push(pickaxeRects.join("\n"));
+    parts.push(`<animateTransform attributeName="transform" type="rotate" values="0 ${pivotX} ${pivotY}; ${swingAngle} ${pivotX} ${pivotY}; 0 ${pivotX} ${pivotY}" dur="1.2s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1"/>`);
+    parts.push(`</g>`);
+
+    // Anime-style swoosh arcs — speed lines along the pickaxe swing path
+    // The pickaxe head traces an arc from ~63° to ~23° (in SVG coords) around the pivot
+    const swooshConfigs = [
+      { radius: 10, strokeWidth: 1,   color: "#FFFFFF", startDeg: 70, endDeg: 20 },
+      { radius: 14, strokeWidth: 1.5, color: "#FFFFFF", startDeg: 75, endDeg: 15 },
+      { radius: 18, strokeWidth: 1,   color: "#E0E0E0", startDeg: 80, endDeg: 10 },
+    ];
+
+    for (const sw of swooshConfigs) {
+      const toRad = (d) => (d * Math.PI) / 180;
+      const x1 = pivotX + sw.radius * Math.cos(toRad(sw.startDeg));
+      const y1 = pivotY + sw.radius * Math.sin(toRad(sw.startDeg));
+      const x2 = pivotX + sw.radius * Math.cos(toRad(sw.endDeg));
+      const y2 = pivotY + sw.radius * Math.sin(toRad(sw.endDeg));
+
+      // Arc path: sweep-flag=0 for counterclockwise
+      // Opacity timed to downstroke: invisible during upswing (0-0.5s), flash on downswing (0.6-1.0s)
+      parts.push(`<path d="M ${x1.toFixed(1)} ${y1.toFixed(1)} A ${sw.radius} ${sw.radius} 0 0 0 ${x2.toFixed(1)} ${y2.toFixed(1)}" fill="none" stroke="${sw.color}" stroke-width="${sw.strokeWidth}" stroke-linecap="round" opacity="0">
+        <animate attributeName="opacity" values="0;0;0;0;0.9;0.3;0" dur="1.2s" repeatCount="indefinite"/>
+      </path>`);
+    }
+
+    // Spark particles near pickaxe head (impact sparks)
+    const sparkColors = ["#FFD700", "#FF6B35", "#FFFFFF", "#FFA500"];
+    const pickaxeX = minerX + 20 * MINER_PIXEL_SIZE;
+    const pickaxeY = minerY + 25 * MINER_PIXEL_SIZE;
+    for (let i = 0; i < 6; i++) {
+      const sx = pickaxeX + (Math.random() * 16) - 4;
+      const sy = pickaxeY + (Math.random() * 12) - 6;
+      const size = 1 + Math.floor(Math.random() * 2);
+      const color = sparkColors[Math.floor(Math.random() * sparkColors.length)];
+      parts.push(`<rect x="${sx}" y="${sy}" width="${size}" height="${size}" fill="${color}" opacity="0">
+        <animate attributeName="opacity" values="0;0;0;0;1;0.4;0" dur="1.2s" repeatCount="indefinite" />
+      </rect>`);
+    }
+  } else {
+    parts.push(spriteToRects(miner, minerX, minerY, MINER_PIXEL_SIZE));
+  }
 
   // 4.5 Sparkles for High Tier
   if (tier.pickaxe === "diamond" || tier.pickaxe === "legendary") {
@@ -197,12 +341,12 @@ export function buildScene(tier, commitCount) {
   }
 
   // 6. Game-style HUD
-  parts.push(buildHud(tier, commitCount));
+  parts.push(buildHud(tier, commitCount, activity));
 
   return wrapSvg(parts.join("\n"), SVG_WIDTH, SVG_HEIGHT);
 }
 
-function buildHud(tier, commitCount) {
+function buildHud(tier, commitCount, activity) {
   const hud = [];
 
   const fontFamily = "'Press Start 2P', monospace";
@@ -210,6 +354,21 @@ function buildHud(tier, commitCount) {
   // Top-left: commits bar
   hud.push(`<rect x="8" y="8" width="220" height="28" rx="4" fill="rgba(0,0,0,0.6)"/>`);
   hud.push(`<text x="16" y="27" font-family="${fontFamily}" font-size="10" fill="#FFFFFF">COMMITS: ${commitCount.toLocaleString()}</text>`);
+
+  // Below commits: streak display
+  if (activity && activity.currentStreak > 0) {
+    const streak = activity.currentStreak;
+    let streakColor = "#FFFFFF";          // 1-6 days: white
+    let streakClass = "";
+    if (streak >= 30) {
+      streakColor = "#FFD700";            // 30+ days: gold + pulse
+      streakClass = ' class="pulse"';
+    } else if (streak >= 7) {
+      streakColor = "#FFD700";            // 7-29 days: gold
+    }
+    hud.push(`<rect x="8" y="42" width="180" height="22" rx="4" fill="rgba(0,0,0,0.6)"/>`);
+    hud.push(`<text x="16" y="58" font-family="${fontFamily}" font-size="8" fill="${streakColor}"${streakClass}>STREAK: ${streak}d</text>`);
+  }
 
   // Top-right: tier badge
   hud.push(`<rect x="${SVG_WIDTH - 158}" y="8" width="150" height="28" rx="4" fill="rgba(0,0,0,0.6)"/>`);
