@@ -22,15 +22,40 @@ Updated automatically every 6 hours via GitHub Actions.
 2. Add it as a repository secret named `GH_TOKEN`
 3. The GitHub Actions workflow handles the rest
 
-## Easy Setup with Claude Code
+## Setup with Claude Code
 
-If you use [Claude Code](https://claude.com/claude-code), just run:
+If you use [Claude Code](https://claude.com/claude-code), copy the prompt below and paste it into your terminal. Claude will handle the rest.
+
+<details>
+<summary>Copy this prompt</summary>
 
 ```
-/project:setup
+Set up GitHub Miner on my profile. Run each step using gh CLI. Only ask me when you need my PAT.
+
+1. Run `gh auth status` to confirm I'm logged in. Extract my username.
+2. Fork tmdgusya/github-graphic to my account: `gh repo fork tmdgusya/github-graphic --clone=false --remote=false`
+3. Enable Actions on the fork: `gh api -X PUT repos/{me}/github-graphic/actions/permissions -f enabled=true -f allowed_actions=all`
+4. Ask me to create a PAT at https://github.com/settings/tokens/new?scopes=read:user&description=github-miner and paste it here.
+5. Store the token: `gh secret set GH_TOKEN --repo {me}/github-graphic --body "{token}"`
+6. Detect the default branch: `gh repo view {me}/github-graphic --json defaultBranchRef --jq '.defaultBranchRef.name'`
+7. Trigger the workflow: `gh workflow run generate.yml --repo {me}/github-graphic`
+8. Poll until the run completes: `gh run list --repo {me}/github-graphic --limit 1 --json status,conclusion`. If it fails, show the logs with `gh run view {id} --repo {me}/github-graphic --log-failed`.
+9. Create my profile repo if it doesn't exist: `gh repo create {me}/{me} --public --add-readme --description "My GitHub profile"`
+10. Clone the profile repo to /tmp, read the existing README.md, and APPEND (do NOT replace existing content) this block at the end:
+
+---
+
+<a href="https://github.com/{me}/github-graphic">
+  <img src="https://raw.githubusercontent.com/{me}/github-graphic/{branch}/github-miner.svg" alt="GitHub Miner" width="800" />
+</a>
+
+<sub>⛏️ This pixel art miner evolves as I commit code. <a href="https://github.com/tmdgusya/github-graphic">Get your own!</a></sub>
+
+11. Commit and push the profile README change, then clean up the temp clone.
+12. Verify the SVG is accessible: `curl -s -o /dev/null -w "%{http_code}" "https://raw.githubusercontent.com/{me}/github-graphic/{branch}/github-miner.svg"`
 ```
 
-Claude will walk you through every step — no technical knowledge needed!
+</details>
 
 ## Local Development
 
