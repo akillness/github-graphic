@@ -65,6 +65,54 @@ export GH_TOKEN=your-token
 node src/index.js
 ```
 
+## Gamification Features
+
+Your miner reacts to your GitHub activity in real time. All data is computed from the existing contribution calendar API — no extra API calls needed.
+
+### Streak HUD
+
+Displays your current consecutive commit streak below the COMMITS counter.
+
+| Streak | Visual |
+|--------|--------|
+| 0 days | Hidden |
+| 1–6 days | `STREAK: 3d` in white |
+| 7–29 days | `STREAK: 14d` in gold |
+| 30+ days | `STREAK: 45d` in gold with pulse animation |
+
+### Miner State
+
+The miner changes appearance based on recent activity.
+
+| State | Condition | Visual Effect |
+|-------|-----------|---------------|
+| **Active** | Committed today | Pickaxe swings (–40° rotation, 1.2s cycle). Anime-style swoosh arcs flash on the downstroke. Spark particles burst at impact. |
+| **Normal** | Last commit 1–6 days ago | Default static pose. No animation. |
+| **Idle** | No commits for 7+ days | Closed eyes, pickaxe resting on ground, muted opacity (65%), floating "zzz" text with pulse. |
+
+### Achievement Alcove
+
+A carved stone panel on the left underground wall displays earned milestones in a 4×2 grid. Earned slots show a carved icon; unearned slots show blank dark stone.
+
+| Slot | Milestone | Icon | Condition |
+|------|-----------|------|-----------|
+| 1 | First Steps | Pickaxe | 50+ contributions |
+| 2 | Century | Star | 100+ contributions |
+| 3 | Dedicated | Double Pickaxe | 500+ contributions |
+| 4 | Veteran | Diamond | 1,000+ contributions |
+| 5 | Master | Crown | 2,500+ contributions |
+| 6 | Legend | Trophy | 5,000+ contributions |
+| 7 | Streak Starter | Small Flame | Longest streak ≥ 7 days |
+| 8 | Streak Master | Large Flame | Longest streak ≥ 30 days |
+
+### Pickaxe Swing Detail
+
+When the miner is in **Active** state, the pickaxe animation has three layers:
+
+1. **Swing** — The pickaxe pixels (handle + head) rotate –40° around the grip point using SVG `<animateTransform>`. Eased with cubic-bezier for a natural arc.
+2. **Swoosh arcs** — Three white speed lines at radii 10/14/18px trace the swing path. Opacity is synced to the **downstroke** (invisible on upswing, flash on downswing).
+3. **Impact sparks** — Six colored particles (#FFD700, #FF6B35, #FFA500, #FFFFFF) burst near the pickaxe head, also timed to the downstroke.
+
 ## Tier Gallery
 
 | Tier | Commits | Description | Preview |
