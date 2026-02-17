@@ -20222,22 +20222,26 @@
 <rect x="656" y="116" width="4" height="4" fill="#505050"/>
 <rect x="660" y="116" width="4" height="4" fill="#696969"/>
 <rect x="664" y="116" width="4" height="4" fill="#505050"/>
-<rect x="192" y="120" width="4" height="4" fill="#795548"/>
-<rect x="196" y="124" width="4" height="4" fill="#A1887F"/>
-<rect x="200" y="128" width="4" height="4" fill="#795548"/>
-<rect x="204" y="128" width="4" height="4" fill="#A1887F"/>
-<rect x="336" y="120" width="4" height="4" fill="#795548"/>
-<rect x="340" y="124" width="4" height="4" fill="#A1887F"/>
-<rect x="344" y="128" width="4" height="4" fill="#795548"/>
-<rect x="348" y="128" width="4" height="4" fill="#A1887F"/>
-<rect x="432" y="120" width="4" height="4" fill="#795548"/>
-<rect x="436" y="124" width="4" height="4" fill="#A1887F"/>
-<rect x="440" y="128" width="4" height="4" fill="#795548"/>
-<rect x="444" y="128" width="4" height="4" fill="#A1887F"/>
-<rect x="768" y="120" width="4" height="4" fill="#795548"/>
-<rect x="772" y="124" width="4" height="4" fill="#A1887F"/>
-<rect x="776" y="128" width="4" height="4" fill="#795548"/>
-<rect x="780" y="128" width="4" height="4" fill="#A1887F"/>
+<rect x="328" y="136" width="4" height="4" fill="#795548"/>
+<rect x="332" y="140" width="4" height="4" fill="#A1887F"/>
+<rect x="336" y="144" width="4" height="4" fill="#795548"/>
+<rect x="340" y="144" width="4" height="4" fill="#A1887F"/>
+<rect x="408" y="124" width="4" height="4" fill="#795548"/>
+<rect x="412" y="128" width="4" height="4" fill="#A1887F"/>
+<rect x="416" y="132" width="4" height="4" fill="#795548"/>
+<rect x="420" y="132" width="4" height="4" fill="#A1887F"/>
+<rect x="116" y="124" width="4" height="4" fill="#795548"/>
+<rect x="120" y="128" width="4" height="4" fill="#A1887F"/>
+<rect x="124" y="132" width="4" height="4" fill="#795548"/>
+<rect x="128" y="132" width="4" height="4" fill="#A1887F"/>
+<rect x="680" y="124" width="4" height="4" fill="#795548"/>
+<rect x="684" y="128" width="4" height="4" fill="#A1887F"/>
+<rect x="688" y="132" width="4" height="4" fill="#795548"/>
+<rect x="692" y="132" width="4" height="4" fill="#A1887F"/>
+<rect x="756" y="136" width="4" height="4" fill="#795548"/>
+<rect x="760" y="140" width="4" height="4" fill="#A1887F"/>
+<rect x="764" y="144" width="4" height="4" fill="#795548"/>
+<rect x="768" y="144" width="4" height="4" fill="#A1887F"/>
 <rect x="390" y="58" width="2" height="2" fill="#1A1A1A"/>
 <rect x="392" y="58" width="2" height="2" fill="#1A1A1A"/>
 <rect x="394" y="58" width="2" height="2" fill="#1A1A1A"/>
@@ -20646,10 +20650,10 @@
 <rect x="402" y="118" width="2" height="2" fill="#FDD835"/>
 <rect x="404" y="118" width="2" height="2" fill="#1A1A1A"/>
 <rect x="8" y="8" width="220" height="28" rx="4" fill="rgba(0,0,0,0.6)"/>
-<text x="16" y="27" font-family="'Press Start 2P', monospace" font-size="10" fill="#FFFFFF">COMMITS: 0</text>
+<text x="16" y="27" font-family="'Press Start 2P', monospace" font-size="10" fill="#FFFFFF">COMMITS: 100</text>
 <rect x="642" y="8" width="150" height="28" rx="4" fill="rgba(0,0,0,0.6)"/>
 <text x="650" y="27" font-family="'Press Start 2P', monospace" font-size="10" fill="#FFD700">TIER 1</text>
 <text x="650" y="50" font-family="'Press Start 2P', monospace" font-size="8" fill="#CCCCCC">DEPTH: 3m</text>
 <rect x="642" y="56" width="150" height="10" rx="2" fill="rgba(0,0,0,0.6)"/>
-<rect x="642" y="56" width="0" height="10" rx="2" fill="#4CAF50" class="progress-bar"/>
+<rect x="642" y="56" width="60" height="10" rx="2" fill="#4CAF50" class="progress-bar"/>
 </svg>
