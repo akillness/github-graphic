@@ -26,24 +26,91 @@ Updated automatically every 6 hours via GitHub Actions.
 
 ## Setup with Claude Code
 
-If you use [Claude Code](https://claude.com/claude-code), copy the prompt below and paste it into your terminal. Claude will handle the rest.
+If you use [Claude Code](https://claude.com/claude-code), copy the prompt below and paste it into your terminal. Claude will handle everything — even if you've never used GitHub before.
 
 <details>
 <summary>Copy this prompt</summary>
 
 ```
-Set up GitHub Miner on my profile. Run each step using gh CLI. Only ask me when you need my PAT.
+Set up GitHub Miner on my profile. Handle everything autonomously. Explain each step in plain language and only ask me when browser action is required.
 
-1. Run `gh auth status` to confirm I'm logged in. Extract my username.
-2. Fork tmdgusya/github-graphic to my account: `gh repo fork tmdgusya/github-graphic --clone=false --remote=false`
-3. Enable Actions on the fork: `gh api -X PUT repos/{me}/github-graphic/actions/permissions -f enabled=true -f allowed_actions=all`
-4. Ask me to create a PAT at https://github.com/settings/tokens/new?scopes=read:user&description=github-miner and paste it here.
-5. Store the token: `gh secret set GH_TOKEN --repo {me}/github-graphic --body "{token}"`
-6. Detect the default branch: `gh repo view {me}/github-graphic --json defaultBranchRef --jq '.defaultBranchRef.name'`
-7. Trigger the workflow: `gh workflow run generate.yml --repo {me}/github-graphic`
-8. Poll until the run completes: `gh run list --repo {me}/github-graphic --limit 1 --json status,conclusion`. If it fails, show the logs with `gh run view {id} --repo {me}/github-graphic --log-failed`.
-9. Create my profile repo if it doesn't exist: `gh repo create {me}/{me} --public --add-readme --description "My GitHub profile"`
-10. Clone the profile repo to /tmp, read the existing README.md, and APPEND (do NOT replace existing content) this block at the end:
+IMPORTANT RULES:
+- After each step, tell me what you just did in simple, friendly language.
+- If any step fails, provide a browser-based fallback with click-by-click instructions.
+- Never show my token value in messages after storing it.
+
+PHASE 0 — PREREQUISITES:
+
+0-1. Check if gh CLI is installed: `gh --version`
+     If NOT installed, tell me:
+       "First, we need to install the GitHub CLI tool. Please run this in your terminal:"
+       - macOS: `brew install gh`
+       - Windows: `winget install --id GitHub.cli`
+       - Linux: see https://github.com/cli/cli/blob/trunk/docs/install_linux.md
+     Wait for me to confirm, then re-check.
+
+0-2. Check if gh is authenticated: `gh auth status`
+     If NOT authenticated, tell me:
+       "I need to connect your terminal to GitHub. I'll run a command that will:"
+       "1) Show a one-time code  2) Open your browser  3) Ask you to paste the code and click Authorize"
+     Then run: `gh auth login --web --git-protocol https`
+     Wait for completion, then verify with `gh auth status`.
+
+0-3. Extract my username: `gh api user --jq '.login'` → store as {me}.
+
+PHASE 1 — GET THE REPOSITORY:
+
+1-1. Check if I already have it: `gh repo view {me}/github-graphic --json name 2>&1`
+     If exists → skip to Phase 2.
+
+1-2. Fork: `gh repo fork tmdgusya/github-graphic --clone=false --remote=false`
+     Verify: `gh repo view {me}/github-graphic --json name,url`
+     If fork fails, tell me to open https://github.com/tmdgusya/github-graphic/fork and click "Create fork".
+
+1-3. Enable Actions: `gh api -X PUT repos/{me}/github-graphic/actions/permissions -f enabled=true -f allowed_actions=all`
+     If fails, tell me to open https://github.com/{me}/github-graphic/actions and click the green enable button.
+
+PHASE 2 — CREATE A SECURITY TOKEN:
+
+Tell me:
+  "Now I need you to create an access key so the miner can read your GitHub activity."
+  "Please open this link: https://github.com/settings/tokens/new?scopes=read:user&description=github-miner"
+  ""
+  "On that page:"
+  "1. 'Note' field → should already say 'github-miner' (don't change it)"
+  "2. 'Expiration' dropdown → select 'No expiration' so your miner never stops"
+  "3. 'Select scopes' → 'read:user' should already be checked (don't check anything else)"
+  "4. Scroll down → click the green 'Generate token' button"
+  "5. You'll see a code starting with ghp_ → copy it immediately (GitHub won't show it again!)"
+  "6. Paste it here"
+
+When I provide the token:
+- Validate it starts with `ghp_` and is 30+ characters. If not, ask me to try again.
+- Verify it works: `gh api -H "Authorization: token {token}" user --jq '.login'`
+- If 401 error, tell me the token might be wrong and ask to recreate it.
+
+PHASE 3 — STORE THE TOKEN:
+
+3-1. `gh secret set GH_TOKEN --repo {me}/github-graphic --body "{token}"`
+3-2. Verify: `gh secret list --repo {me}/github-graphic` → should show GH_TOKEN.
+     If fails, guide me to https://github.com/{me}/github-graphic/settings/secrets/actions/new
+     with Name: GH_TOKEN and Secret: the token I pasted.
+
+PHASE 4 — SET UP PROFILE PAGE:
+
+4-1. Check if profile repo exists: `gh repo view {me}/{me} --json name 2>&1`
+     If not, create it: `gh repo create {me}/{me} --public --add-readme --description "My GitHub profile"`
+     If creation fails, guide me to https://github.com/new with repository name = my username.
+
+4-2. Detect branches:
+     `gh repo view {me}/github-graphic --json defaultBranchRef --jq '.defaultBranchRef.name'` → {branch}
+     `gh repo view {me}/{me} --json defaultBranchRef --jq '.defaultBranchRef.name'` → {profile_branch}
+
+4-3. Check if miner is already embedded:
+     `gh api repos/{me}/{me}/contents/README.md --jq '.content' | base64 --decode 2>/dev/null`
+     If it contains "github-miner.svg" → skip to Phase 5.
+
+4-4. Clone profile repo to /tmp, read existing README.md, and APPEND (do NOT replace existing content):
 
 ---
 
@@ -53,8 +120,18 @@ Set up GitHub Miner on my profile. Run each step using gh CLI. Only ask me when 
 
 <sub>⛏️ This pixel art miner evolves as I commit code. <a href="https://github.com/tmdgusya/github-graphic">Get your own!</a></sub>
 
-11. Commit and push the profile README change, then clean up the temp clone.
-12. Verify the SVG is accessible: `curl -s -o /dev/null -w "%{http_code}" "https://raw.githubusercontent.com/{me}/github-graphic/{branch}/github-miner.svg"`
+     Commit, push, and clean up the temp clone.
+
+PHASE 5 — START THE MINER:
+
+5-1. `gh workflow run generate.yml --repo {me}/github-graphic`
+5-2. Wait ~30s, then poll: `gh run list --repo {me}/github-graphic --limit 1 --json status,conclusion,databaseId`
+     If in_progress, wait and re-check. If failed, show logs with `gh run view {id} --repo {me}/github-graphic --log-failed`.
+5-3. Verify SVG: `curl -s -o /dev/null -w "%{http_code}" "https://raw.githubusercontent.com/{me}/github-graphic/{branch}/github-miner.svg"` → expect 200.
+
+PHASE 6 — DONE!
+
+Tell me: "Your GitHub Miner is live! Open https://github.com/{me} to see it. It updates every 6 hours automatically. The more you commit, the deeper your mine gets!"
 ```
 
 </details>
@@ -86,11 +163,11 @@ Displays your current consecutive commit streak below the COMMITS counter.
 
 The miner changes appearance based on recent activity.
 
-| State | Condition | Visual Effect |
-|-------|-----------|---------------|
-| **Active** | Committed today | Pickaxe swings (–40° rotation, 1.2s cycle). Anime-style swoosh arcs flash on the downstroke. Spark particles burst at impact. |
-| **Normal** | Last commit 1–6 days ago | Default static pose. No animation. |
-| **Idle** | No commits for 7+ days | Closed eyes, pickaxe resting on ground, muted opacity (65%), floating "zzz" text with pulse. |
+| State | Condition | Visual Effect | Preview |
+|-------|-----------|---------------|---------|
+| **Active** | Committed today | Pickaxe swings (–40° rotation, 1.2s cycle). Anime-style swoosh arcs flash on the downstroke. Spark particles burst at impact. | ![Active](docs/images/state-active.svg) |
+| **Normal** | Last commit 1–6 days ago | Default static pose. No animation. | ![Normal](docs/images/state-normal.svg) |
+| **Idle** | No commits for 7+ days | Closed eyes, pickaxe resting on ground, muted opacity (65%), floating "zzz" text with pulse. | ![Idle](docs/images/state-idle.svg) |
 
 ### Achievement Alcove
 
