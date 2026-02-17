@@ -1,5 +1,7 @@
 # GitHub Miner
 
+**English** | [한국어](README_ko.md)
+
 A pixel art miner inspired by 굴착소년 쿵 (Under Attack) that evolves based on your GitHub commit activity.
 
 ![GitHub Miner](github-miner.svg)
